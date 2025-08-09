@@ -17,6 +17,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httplog/v3"
+
+	_ "byfood-app/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func StartServer(ctx context.Context) {
@@ -82,8 +87,9 @@ func InitRoutes(ctx context.Context, deps *core.Dependency) http.Handler {
 	// base middleware stack
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(httplog.RequestLogger(deps.Logger, &httplog.Options{}))
+
 	// basic CORS
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -95,6 +101,9 @@ func InitRoutes(ctx context.Context, deps *core.Dependency) http.Handler {
 	}))
 
 	// setup routes
+	// docs routes
+	r.HandleFunc("/swagger/*", httpSwagger.WrapHandler)
+
 	// book routes
 	r.Get("/books", bookHandler.GetBooks)
 	r.Get("/books/{id}", bookHandler.GetBookByID)

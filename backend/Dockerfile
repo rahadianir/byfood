@@ -19,6 +19,7 @@ WORKDIR /app
 
 # Copy executable from build step
 COPY --from=build /app/byfood-app byfood-app
+COPY --from=build /app/docs docs
 
 EXPOSE 8080
 

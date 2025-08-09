@@ -26,6 +26,13 @@ func NewHTTPHandler(deps *core.Dependency, logic LogicInterface) *BookHandler {
 	}
 }
 
+// GetBooks godoc
+// @Summary List all books with pagination and search query params
+// @Tags books
+// @Produce json
+// @Param search query string false "search param to search by title and author"
+// @Success 200 {object} xhttp.BaseResponse{data=[]model.Book, metadata=pagination.Metadata}
+// @Router /books [get]
 func (h *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -58,6 +65,13 @@ func (h *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+// GetBook godoc
+// @Summary Get a book data by its ID
+// @Tags books
+// @Produce json
+// @Param id path integer true "book ID"
+// @Success 200 {object} xhttp.BaseResponse{data=model.Book}
+// @Router /books/{id} [get]
 func (h *BookHandler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -95,6 +109,13 @@ func (h *BookHandler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+// StoreBook godoc
+// @Summary Store new book data, return stored data
+// @Tags books
+// @Produce json
+// @Param data body model.StoreBookRequest true "book data"
+// @Success 200 {object} xhttp.BaseResponse{data=model.Book}
+// @Router /books [post]
 func (h *BookHandler) StoreBook(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -129,6 +150,14 @@ func (h *BookHandler) StoreBook(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+// UpdateBook godoc
+// @Summary Update book data by ID, return updated data
+// @Tags books
+// @Produce json
+// @Param id path integer true "book ID"
+// @Param data body model.UpdateBookRequest true "book data"
+// @Success 200 {object} xhttp.BaseResponse{data=model.Book}
+// @Router /books/{id} [put]
 func (h *BookHandler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -151,7 +180,7 @@ func (h *BookHandler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// parse request body
-	var payload model.StoreBookRequest
+	var payload model.UpdateBookRequest
 	err = xhttp.BindJSONRequest(r, &payload)
 	if err != nil {
 		xhttp.SendJSONResponse(w, xhttp.BaseResponse{
@@ -183,6 +212,13 @@ func (h *BookHandler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DeleteBook godoc
+// @Summary Delete book data by ID
+// @Tags books
+// @Produce json
+// @Param id path integer true "book ID"
+// @Success 200 {object} xhttp.BaseResponse{message=string}
+// @Router /books/{id} [delete]
 func (h *BookHandler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

@@ -1,7 +1,7 @@
--- create library schema
+-- Create library schema
 CREATE SCHEMA IF NOT EXISTS library;
 
--- create books table
+-- Create books table
 CREATE TABLE IF NOT EXISTS library.books (
     id BIGSERIAL PRIMARY KEY,
     title TEXT NOT NULL,
@@ -11,6 +11,14 @@ CREATE TABLE IF NOT EXISTS library.books (
     updated_at TIMESTAMP DEFAULT now(),
     deleted_at TIMESTAMP
 );
+
+-- Create index for title column
+CREATE INDEX idx_books_title
+ON library.books (title);
+
+-- Create index for author column
+CREATE INDEX idx_books_author
+ON library.books (author);
 
 -- insert books data as seeder
 INSERT INTO library.books (title, author, publish_year) VALUES 

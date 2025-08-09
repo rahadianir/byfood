@@ -1,0 +1,193 @@
+basePath: /
+definitions:
+  model.Book:
+    properties:
+      author:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      publish_year:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.StoreBookRequest:
+    properties:
+      author:
+        type: string
+      publish_year:
+        type: integer
+      title:
+        type: string
+    type: object
+  model.UpdateBookRequest:
+    properties:
+      author:
+        type: string
+      publish_year:
+        type: integer
+      title:
+        type: string
+    type: object
+  pagination.Metadata:
+    properties:
+      current_page:
+        example: 1
+        type: integer
+      first_page:
+        example: 1
+        type: integer
+      last_page:
+        example: 1
+        type: integer
+      page_size:
+        example: 50
+        type: integer
+      total_records:
+        example: 1
+        type: integer
+    type: object
+  xhttp.BaseResponse:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API documentation for ByFood App.
+  title: ByFood App
+  version: "1.0"
+paths:
+  /books:
+    get:
+      parameters:
+      - description: search param to search by title and author
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/xhttp.BaseResponse'
+            - properties:
+                ' metadata':
+                  $ref: '#/definitions/pagination.Metadata'
+                data:
+                  items:
+                    $ref: '#/definitions/model.Book'
+                  type: array
+              type: object
+      summary: List all books with pagination and search query params
+      tags:
+      - books
+    post:
+      parameters:
+      - description: book data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StoreBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/xhttp.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Book'
+              type: object
+      summary: Store new book data, return stored data
+      tags:
+      - books
+  /books/{id}:
+    delete:
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/xhttp.BaseResponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+      summary: Delete book data by ID
+      tags:
+      - books
+    get:
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/xhttp.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Book'
+              type: object
+      summary: Get a book data by its ID
+      tags:
+      - books
+    put:
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: book data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/xhttp.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Book'
+              type: object
+      summary: Update book data by ID, return updated data
+      tags:
+      - books
+swagger: "2.0"

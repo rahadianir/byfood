@@ -46,6 +46,7 @@ func (repo *BookRepo) GetBooks(ctx context.Context, params model.BookSearchParam
 	}
 
 	q.Where(q.IsNull("deleted_at"))
+	q.OrderBy("id")
 
 	// build and exec query
 	query, args := q.BuildWithFlavor(sqlbuilder.PostgreSQL)
