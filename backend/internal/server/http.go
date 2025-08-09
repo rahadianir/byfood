@@ -4,6 +4,7 @@ import (
 	"byfood-app/internal/book"
 	"byfood-app/internal/config"
 	"byfood-app/internal/core"
+	"byfood-app/internal/urlcleaner"
 	"context"
 	"errors"
 	"fmt"
@@ -70,9 +71,11 @@ func InitRoutes(ctx context.Context, deps *core.Dependency) http.Handler {
 
 	// wiring logic layer
 	bookLogic := book.NewBookLogic(deps, bookRepo)
+	urlCleanerLogic := urlcleaner.NewURLCleanerLogic(deps)
 
 	// wiring handler layer
 	bookHandler := book.NewHTTPHandler(deps, bookLogic)
+	urlCleanerHandler := urlcleaner.NewURLCleanerHandler(deps, urlCleanerLogic)
 
 	r := chi.NewRouter()
 
@@ -100,7 +103,7 @@ func InitRoutes(ctx context.Context, deps *core.Dependency) http.Handler {
 	r.Delete("/books/{id}", bookHandler.DeleteBook)
 
 	// url cleanup routes
-	
+	r.Post("/url/cleanup", urlCleanerHandler.CleanURL)
 
 	return r
 }
