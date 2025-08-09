@@ -9,6 +9,12 @@ type ClientError struct {
 	Err error
 }
 
+func NewClientError(err error) ClientError {
+	return ClientError{
+		Err: err,
+	}
+}
+
 func (e ClientError) Error() string {
 	return e.Err.Error()
 }
