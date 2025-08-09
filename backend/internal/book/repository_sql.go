@@ -31,10 +31,10 @@ func (repo *BookRepo) GetBooks(ctx context.Context, params model.BookSearchParam
 
 	// base query
 	countQ := sqlbuilder.NewSelectBuilder()
-	countQ.Select("COUNT(1)").From("project.books")
+	countQ.Select("COUNT(1)").From("library.books")
 
 	q := sqlbuilder.NewSelectBuilder()
-	q = q.Select("id", "title", "author", "publish_year", "created_at", "updated_at").From("project.books")
+	q = q.Select("id", "title", "author", "publish_year", "created_at", "updated_at").From("library.books")
 
 	if params.Search != "" {
 		q.Where(
@@ -66,11 +66,11 @@ func (repo *BookRepo) GetBooks(ctx context.Context, params model.BookSearchParam
 		result = append(result, model.Book{
 			ID:          temp.ID.Int64,
 			Title:       temp.Title.String,
-			Author:      temp.Title.String,
+			Author:      temp.Author.String,
 			PublishYear: temp.PublishYear.Int64,
 			BaseAudit: model.BaseAudit{
-				CreatedAt: temp.CreatedAt.Time,
-				UpdatedAt: temp.UpdatedAt.Time,
+				CreatedAt: &temp.CreatedAt.Time,
+				UpdatedAt: &temp.UpdatedAt.Time,
 			},
 		})
 	}
@@ -98,10 +98,10 @@ func (repo *BookRepo) GetBookByID(ctx context.Context, id int64) (model.Book, er
 
 	q := `SELECT id, title, author, publish_year, created_at, updated_at FROM library.books WHERE id = $1 AND deleted_at ISNULL;`
 
-	err := repo.deps.DB.QueryRowxContext(ctx, q, id).Scan(&result)
+	err := repo.deps.DB.QueryRowxContext(ctx, q, id).StructScan(&result)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return model.Book{}, xerrors.ErrDataNotFound
+			return model.Book{}, xerrors.NewClientError(xerrors.ErrDataNotFound)
 		}
 
 		return model.Book{}, err
@@ -113,8 +113,8 @@ func (repo *BookRepo) GetBookByID(ctx context.Context, id int64) (model.Book, er
 		Author:      result.Author.String,
 		PublishYear: result.PublishYear.Int64,
 		BaseAudit: model.BaseAudit{
-			CreatedAt: result.CreatedAt.Time,
-			UpdatedAt: result.UpdatedAt.Time,
+			CreatedAt: &result.CreatedAt.Time,
+			UpdatedAt: &result.UpdatedAt.Time,
 		},
 	}, nil
 }
@@ -131,8 +131,8 @@ func (repo *BookRepo) StoreBook(ctx context.Context, data model.Book) (model.Boo
 	}
 
 	data.ID = returned.ID.Int64
-	data.CreatedAt = returned.CreatedAt.Time
-	data.UpdatedAt = returned.UpdatedAt.Time
+	data.CreatedAt = &returned.CreatedAt.Time
+	data.UpdatedAt = &returned.UpdatedAt.Time
 
 	return data, nil
 }
@@ -169,7 +169,13 @@ func (repo *BookRepo) UpdateBook(ctx context.Context, data model.Book) (model.Bo
 		return data, err
 	}
 
-	data.UpdatedAt = returned.UpdatedAt.Time
+	err = tx.Commit()
+	if err != nil {
+		repo.deps.Logger.ErrorContext(ctx, "failed to commit sql transaction", slog.Any("error", err))
+		return data, err
+	}
+
+	data.UpdatedAt = &returned.UpdatedAt.Time
 
 	return data, nil
 }
@@ -204,6 +210,12 @@ func (repo *BookRepo) DeleteBook(ctx context.Context, id int64) error {
 		// this means no data is soft deleted
 		// which probably caused by invalid id input (i.e. deleting deleted entry)
 		return xerrors.NewClientError(xerrors.ErrInvalidID)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		repo.deps.Logger.ErrorContext(ctx, "failed to commit sql transaction", slog.Any("error", err))
+		return err
 	}
 
 	return nil

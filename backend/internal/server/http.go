@@ -92,7 +92,15 @@ func InitRoutes(ctx context.Context, deps *core.Dependency) http.Handler {
 	}))
 
 	// setup routes
+	// book routes
 	r.Get("/books", bookHandler.GetBooks)
+	r.Get("/books/{id}", bookHandler.GetBookByID)
+	r.Post("/books", bookHandler.StoreBook)
+	r.Put("/books/{id}", bookHandler.UpdateBook)
+	r.Delete("/books/{id}", bookHandler.DeleteBook)
+
+	// url cleanup routes
+	
 
 	return r
 }

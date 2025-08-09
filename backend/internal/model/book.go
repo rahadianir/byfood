@@ -21,3 +21,16 @@ type SQLBook struct {
 type BookSearchParams struct {
 	Search string
 }
+
+type StoreBookRequest struct {
+	Title       string `json:"title"`
+	Author      string `json:"author"`
+	PublishYear int64  `json:"publish_year"`
+}
+
+type UpdateBookRequest struct {
+	ID          int64  `json:"id"`
+	Title       string `json:"title"`
+	Author      string `json:"author"`
+	PublishYear int64  `json:"publish_year"`
+}

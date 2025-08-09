@@ -43,10 +43,6 @@ func (logic *BookLogic) GetBookByID(ctx context.Context, id int64) (model.Book, 
 
 	data, err := logic.repo.GetBookByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, xerrors.ErrDataNotFound) {
-			return model.Book{}, err
-		}
-
 		logic.deps.Logger.ErrorContext(ctx, "failed to get book by id", slog.Any("error", err))
 		return model.Book{}, err
 	}
@@ -57,11 +53,11 @@ func (logic *BookLogic) GetBookByID(ctx context.Context, id int64) (model.Book, 
 func (logic *BookLogic) StoreBook(ctx context.Context, data model.Book) (model.Book, error) {
 	switch {
 	case data.Author == "":
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("author field must not empty"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("author field is empty"))
 	case data.Title == "":
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("title field must not empty"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("title field is empty"))
 	case data.PublishYear <= 0:
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("publish year field must not empty and greater than 0"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("publish year field is empty or less than equal 0"))
 	}
 
 	result, err := logic.repo.StoreBook(ctx, data)
@@ -78,11 +74,11 @@ func (logic *BookLogic) UpdateBook(ctx context.Context, data model.Book) (model.
 	case data.ID <= 0:
 		return model.Book{}, xerrors.NewClientError(xerrors.ErrInvalidID)
 	case data.Author == "":
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("author field must not empty"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("author field is empty"))
 	case data.Title == "":
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("title field must not empty"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("title field is empty"))
 	case data.PublishYear <= 0:
-		return model.Book{}, xerrors.NewClientError(fmt.Errorf("publish year field must not empty and greater than 0"))
+		return model.Book{}, xerrors.NewClientError(fmt.Errorf("publish year field is empty or less than equal 0"))
 	}
 
 	result, err := logic.repo.UpdateBook(ctx, data)
