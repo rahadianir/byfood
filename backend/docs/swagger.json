@@ -218,6 +218,36 @@
                     }
                 }
             }
+        },
+        "/url/cleanup": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urlCleaner"
+                ],
+                "summary": "Clean up URL with either canonical, redirection, or both (all) operations",
+                "parameters": [
+                    {
+                        "description": "URL to be clean and the selected operation ('canonical', 'redirection', 'all')",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.URLCleanerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.URLCleanerResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -257,6 +287,26 @@
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.URLCleanerRequest": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string",
+                    "example": "canonical,redirection,all"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.URLCleanerResponse": {
+            "type": "object",
+            "properties": {
+                "processed_url": {
                     "type": "string"
                 }
             }

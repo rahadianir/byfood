@@ -21,6 +21,13 @@ func NewURLCleanerHandler(deps *core.Dependency, logic URLCleanerLogicInterface)
 	}
 }
 
+// CleanURL godoc
+// @Summary Clean up URL with either canonical, redirection, or both (all) operations
+// @Tags urlCleaner
+// @Produce json
+// @Param data body model.URLCleanerRequest true "URL to be clean and the selected operation ('canonical', 'redirection', 'all')"
+// @Success 200 {object} model.URLCleanerResponse{}
+// @Router /url/cleanup [post]
 func (h *URLCLeanerHandler) CleanURL(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

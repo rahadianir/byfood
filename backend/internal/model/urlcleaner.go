@@ -2,7 +2,7 @@ package model
 
 type URLCleanerRequest struct {
 	URL       string `json:"url"`
-	Operation string `json:"operation"`
+	Operation string `json:"operation" example:"canonical,redirection,all"`
 }
 
 type URLCleanerResponse struct {
