@@ -87,6 +87,21 @@ func (mr *MockRepositoryInterfaceMockRecorder) GetBooks(ctx, params, page any) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBooks", reflect.TypeOf((*MockRepositoryInterface)(nil).GetBooks), ctx, params, page)
 }
 
+// GetBooksNoPagination mocks base method.
+func (m *MockRepositoryInterface) GetBooksNoPagination(ctx context.Context, params model.BookSearchParams) ([]model.Book, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBooksNoPagination", ctx, params)
+	ret0, _ := ret[0].([]model.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBooksNoPagination indicates an expected call of GetBooksNoPagination.
+func (mr *MockRepositoryInterfaceMockRecorder) GetBooksNoPagination(ctx, params any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBooksNoPagination", reflect.TypeOf((*MockRepositoryInterface)(nil).GetBooksNoPagination), ctx, params)
+}
+
 // StoreBook mocks base method.
 func (m *MockRepositoryInterface) StoreBook(ctx context.Context, data model.Book) (model.Book, error) {
 	m.ctrl.T.Helper()

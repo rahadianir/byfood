@@ -229,3 +229,56 @@ func (repo *BookRepo) DeleteBook(ctx context.Context, id int64) error {
 
 	return nil
 }
+
+func (repo *BookRepo) GetBooksNoPagination(ctx context.Context, params model.BookSearchParams) ([]model.Book, error) {
+	var result []model.Book
+
+	// base query
+	countQ := sqlbuilder.NewSelectBuilder()
+	countQ.Select("COUNT(1)").From("library.books")
+
+	q := sqlbuilder.NewSelectBuilder()
+	q = q.Select("id", "title", "author", "publish_year", "created_at", "updated_at").From("library.books")
+
+	if params.Search != "" {
+		q.Where(
+			q.Or(
+				q.ILike("title", "%"+params.Search+"%"),
+				q.ILike("author", "%"+params.Search+"%"),
+			),
+		)
+	}
+
+	q.Where(q.IsNull("deleted_at"))
+	q.OrderBy("id")
+
+	// build and exec query
+	query, args := q.BuildWithFlavor(sqlbuilder.PostgreSQL)
+	rows, err := repo.deps.DB.QueryxContext(ctx, query, args...)
+	if err != nil {
+		return result, err
+	}
+	defer rows.Close()
+
+	var temp model.SQLBook
+	for rows.Next() {
+		err := rows.StructScan(&temp)
+		if err != nil {
+			repo.deps.Logger.WarnContext(ctx, "failed to scan book data", slog.Any("error", err))
+			continue
+		}
+
+		result = append(result, model.Book{
+			ID:          temp.ID.Int64,
+			Title:       temp.Title.String,
+			Author:      temp.Author.String,
+			PublishYear: temp.PublishYear.Int64,
+			BaseAudit: model.BaseAudit{
+				CreatedAt: &temp.CreatedAt.Time,
+				UpdatedAt: &temp.UpdatedAt.Time,
+			},
+		})
+	}
+
+	return result, nil
+}

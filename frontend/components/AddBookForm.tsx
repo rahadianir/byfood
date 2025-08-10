@@ -28,10 +28,10 @@ export default function AddBookForm({ onSuccess }: AddBookFormProps) {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/books", {
+      const res = await fetch("http://localhost:8080/books", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, author, year: Number(year) }),
+        body: JSON.stringify({ title, author, publish_year: Number(year) }),
       });
 
       if (!res.ok) {
@@ -51,53 +51,86 @@ export default function AddBookForm({ onSuccess }: AddBookFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <form onSubmit={handleSubmit} style={formStyle}>
+      {error && <p style={errorStyle}>{error}</p>}
 
-      <div style={{ marginBottom: "10px" }}>
-        <label>Title:</label>
+      <div style={fieldStyle}>
+        <label style={labelStyle}>Title:</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ width: "100%" }}
+          style={inputStyle}
           required
         />
       </div>
-      <div style={{ marginBottom: "10px" }}>
-        <label>Author:</label>
+
+      <div style={fieldStyle}>
+        <label style={labelStyle}>Author:</label>
         <input
           type="text"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
-          style={{ width: "100%" }}
+          style={inputStyle}
           required
         />
       </div>
 
-      <div style={{ marginBottom: "10px" }}>
-        <label>Year:</label>
+      <div style={fieldStyle}>
+        <label style={labelStyle}>Year:</label>
         <input
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          style={{ width: "100%" }}
+          style={inputStyle}
           required
         />
       </div>
 
-      <button
-        type="submit"
-        style={{
-          padding: "8px 16px",
-          background: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-        }}
-      >
+      <button type="submit" style={buttonStyle}>
         Save
       </button>
     </form>
   );
 }
+
+// Styles
+const formStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+};
+
+const fieldStyle: React.CSSProperties = {
+  marginBottom: "12px",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  marginBottom: "4px",
+  fontWeight: "bold",
+  color: "#ddd",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "8px",
+  borderRadius: "6px",
+  border: "1px solid #555",
+  backgroundColor: "#2a2a2a",
+  color: "#f5f5f5",
+};
+
+const errorStyle: React.CSSProperties = {
+  color: "#ff6b6b",
+  marginBottom: "10px",
+};
+
+const buttonStyle: React.CSSProperties = {
+  padding: "10px",
+  backgroundColor: "#4CAF50",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "bold",
+};

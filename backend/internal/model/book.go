@@ -19,7 +19,8 @@ type SQLBook struct {
 }
 
 type BookSearchParams struct {
-	Search string
+	Search           string
+	RemovePagination bool
 }
 
 type StoreBookRequest struct {

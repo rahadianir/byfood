@@ -24,6 +24,12 @@ func NewBookLogic(deps *core.Dependency, repo RepositoryInterface) *BookLogic {
 }
 
 func (logic *BookLogic) GetBooks(ctx context.Context, params model.BookSearchParams, page pagination.Page) ([]model.Book, pagination.Metadata, error) {
+	// this function works, but
+	// use GetBooksNoPagination,
+	// cuz it's hard to implement
+	// pagination on the frontend side
+	// skill issue on me :(
+
 	data, meta, err := logic.repo.GetBooks(ctx, params, page)
 	if err != nil {
 		if errors.Is(err, xerrors.ErrDataNotFound) {
@@ -33,6 +39,7 @@ func (logic *BookLogic) GetBooks(ctx context.Context, params model.BookSearchPar
 		logic.deps.Logger.ErrorContext(ctx, "failed to get books", slog.Any("error", err))
 		return []model.Book{}, meta, err
 	}
+
 	return data, meta, nil
 }
 
@@ -101,4 +108,14 @@ func (logic *BookLogic) DeleteBook(ctx context.Context, id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (logic *BookLogic) GetBooksNoPagination(ctx context.Context, params model.BookSearchParams) ([]model.Book, error) {
+	data, err := logic.repo.GetBooksNoPagination(ctx, params)
+	if err != nil {
+		logic.deps.Logger.ErrorContext(ctx, "failed to get books", slog.Any("error", err))
+		return []model.Book{}, err
+	}
+
+	return data, nil
 }

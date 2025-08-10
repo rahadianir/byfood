@@ -3,7 +3,6 @@ package book
 import (
 	"byfood-app/internal/core"
 	"byfood-app/internal/model"
-	"byfood-app/internal/pkg/pagination"
 	"byfood-app/internal/pkg/xerrors"
 	"byfood-app/internal/pkg/xhttp"
 	"errors"
@@ -31,24 +30,50 @@ func NewHTTPHandler(deps *core.Dependency, logic LogicInterface) *BookHandler {
 // @Tags books
 // @Produce json
 // @Param search query string false "search param to search by title and author"
+// @Param page query integer false "page number"
+// @Param size query integer false "item per page"
 // @Success 200 {object} xhttp.BaseResponse{data=[]model.Book, metadata=pagination.Metadata}
 // @Router /books [get]
 func (h *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	page, err := pagination.ParsePaginationRequest(r)
-	if err != nil {
-		h.deps.Logger.WarnContext(ctx, "failed to parse pagination params", slog.Any("error", err))
-		xhttp.SendJSONResponse(w, xhttp.BaseResponse{
-			Error:   err.Error(),
-			Message: "failed to parse pagination params",
-		}, http.StatusBadRequest)
-		return
-	}
+	// these functions works, but
+	// use GetBooksNoPagination for now
+	// cuz it's hard to implement
+	// pagination on the frontend side
+	// skill issue on me :(
 
-	data, meta, err := h.logic.GetBooks(ctx, model.BookSearchParams{
+	// page, err := pagination.ParsePaginationRequest(r)
+	// if err != nil {
+	// 	h.deps.Logger.WarnContext(ctx, "failed to parse pagination params", slog.Any("error", err))
+	// 	xhttp.SendJSONResponse(w, xhttp.BaseResponse{
+	// 		Error:   err.Error(),
+	// 		Message: "failed to parse pagination params",
+	// 	}, http.StatusBadRequest)
+	// 	return
+	// }
+
+	// data, meta, err := h.logic.GetBooks(ctx, model.BookSearchParams{
+	// 	Search: r.URL.Query().Get("search"),
+	// }, page)
+	// if err != nil && !errors.Is(err, xerrors.ErrDataNotFound) {
+	// 	h.deps.Logger.ErrorContext(ctx, "failed to get book(s)", slog.Any("error", err))
+	// 	xhttp.SendJSONResponse(w, xhttp.BaseResponse{
+	// 		Error:   err.Error(),
+	// 		Message: "failed to get book(s)",
+	// 	}, xerrors.ParseErrorTypeToCodeInt(err))
+	// 	return
+	// }
+
+	// xhttp.SendJSONResponse(w, xhttp.BaseListResponse{
+	// 	Message:  "books fetched",
+	// 	Data:     data,
+	// 	Metadata: meta,
+	// }, http.StatusOK)
+
+	data, err := h.logic.GetBooksNoPagination(ctx, model.BookSearchParams{
 		Search: r.URL.Query().Get("search"),
-	}, page)
+	})
 	if err != nil && !errors.Is(err, xerrors.ErrDataNotFound) {
 		h.deps.Logger.ErrorContext(ctx, "failed to get book(s)", slog.Any("error", err))
 		xhttp.SendJSONResponse(w, xhttp.BaseResponse{
@@ -57,11 +82,9 @@ func (h *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
 		}, xerrors.ParseErrorTypeToCodeInt(err))
 		return
 	}
-
 	xhttp.SendJSONResponse(w, xhttp.BaseListResponse{
-		Message:  "books fetched",
-		Data:     data,
-		Metadata: meta,
+		Message: "books fetched",
+		Data:    data,
 	}, http.StatusOK)
 }
 
