@@ -79,12 +79,13 @@ func (logic *URLCleanerLogic) canonicalCleanUp(ctx context.Context, link *url.UR
 }
 
 func (logic *URLCleanerLogic) redirectionCleanUp(ctx context.Context, link *url.URL) (*url.URL, error) {
-	// ensure the domain is byfood means change it to byfood if needed
-	// or simply throw error when it's not byfood.com??
-	// link.Host = "byfood.com"
-	if strings.ToLower(link.Host) != "byfood.com" {
+	// "fail" fast
+	if !strings.Contains(strings.ToLower(link.Host), "byfood") {
 		return nil, xerrors.NewClientError(fmt.Errorf("invalid domain url"))
 	}
+
+	link.Host = "www.byfood.com"
+
 	urlString := strings.ToLower(link.String())
 	u, err := url.Parse(urlString)
 	if err != nil {
