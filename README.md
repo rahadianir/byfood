@@ -7,13 +7,42 @@ A Dockerized application for storing books data + URL cleaner. It includes:
 - Go app for handling books data and URL cleaner
 - PostgreSQL for database
 
+## Getting Started
+### 0. Install Dependencies & Tools
+- **[Docker & Docker Compose](https://docs.docker.com/compose/)**
+### 1. Clone The Repo
+
+```bash
+git clone https://github.com/rahadianir/byfood.git
+cd byfood
+```
+### 2. Build & Run Services
+Make sure you have docker compose installed and run this command to build and run the services.
+
+```bash
+docker compose up --build -d
+```
+### 3. Browse the app
+
+DASHBOARD: http://localhost
+
+SWAGGER: http://localhost:8080/swagger/index.html 
+
+* Next.js serves dashboard on port 80
+* Backend API served on port 8080
+* Postgresql accessible on port 5432
+
+### 4. Clean up
+```bash
+docker compose down --volumes
+```
+
 ## Overview
 ### Next.js App :
 * Serves dashboard to manage books data on port 80
 * Use dynamic routing to show book data details
 * Use modal dialog to enhance user experience
 * Client side validation for most inputs
-
 
 ### Go App :
 Serves API to interact with books data and URL cleaner
@@ -232,34 +261,6 @@ curl --request POST \
 ### Network separation :
 * api-network: frontend and backend containers
 * repository-network: backend and PostgreSQL containers
-
-## Getting Started
-### 1. Clone The Repo
-
-```bash
-git clone https://github.com/rahadianir/byfood.git
-cd byfood
-```
-### 2. Build & Run Services
-Make sure you have docker compose installed and run this command to build and run the services.
-
-```bash
-docker compose up --build -d
-```
-### 3. Browse the app
-
-DASHBOARD: http://localhost
-
-SWAGGER: http://localhost:8080/swagger/index.html 
-
-* Next.js serves dashboard on port 80
-* Backend API served on port 8080
-* Postgresql accessible on port 5432
-
-### 4. Clean up
-```bash
-docker compose down --volumes
-```
 
 ## Repository Structure
 ```
