@@ -48,6 +48,14 @@ func (repo *BookRepo) GetBooks(ctx context.Context, params model.BookSearchParam
 	q.Where(q.IsNull("deleted_at"))
 	q.OrderBy("id")
 
+	// store where clause for metadata query
+	whereClauseNoPage := q.WhereClause
+
+	// pagination compute
+	page.Compute()
+	q.Limit(page.Limit)
+	q.Offset(page.Offset)
+
 	// build and exec query
 	query, args := q.BuildWithFlavor(sqlbuilder.PostgreSQL)
 	rows, err := repo.deps.DB.QueryxContext(ctx, query, args...)
@@ -78,7 +86,7 @@ func (repo *BookRepo) GetBooks(ctx context.Context, params model.BookSearchParam
 
 	// build metadata
 	var total int64
-	countQ.WhereClause = q.WhereClause
+	countQ.WhereClause = whereClauseNoPage
 	query, args = countQ.BuildWithFlavor(sqlbuilder.PostgreSQL)
 	err = repo.deps.DB.QueryRowxContext(ctx, query, args...).Scan(&total)
 	if err != nil {

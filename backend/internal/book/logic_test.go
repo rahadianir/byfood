@@ -46,12 +46,12 @@ func TestBookLogic_StoreBook(t *testing.T) {
 	expectedResult := model.Book{}
 
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		want       model.Book
-		wantErr    bool
-		expectFunc func()
+		name     string
+		fields   fields
+		args     args
+		want     model.Book
+		wantErr  bool
+		mockFunc func()
 	}{
 		{
 			name:   "success store book data",
@@ -66,7 +66,7 @@ func TestBookLogic_StoreBook(t *testing.T) {
 			},
 			want:    expectedResult,
 			wantErr: false,
-			expectFunc: func() {
+			mockFunc: func() {
 				ts.MockBookRepo.EXPECT().StoreBook(gomock.Any(), model.Book{
 					Title:       "One Piece",
 					Author:      "Eiichiro Oda",
@@ -85,7 +85,7 @@ func TestBookLogic_StoreBook(t *testing.T) {
 				repo: tt.fields.repo,
 			}
 
-			tt.expectFunc()
+			tt.mockFunc()
 
 			got, err := logic.StoreBook(tt.args.ctx, tt.args.data)
 			if (err != nil) != tt.wantErr {
@@ -121,13 +121,13 @@ func TestBookLogic_GetBooks(t *testing.T) {
 	expectedResult := []model.Book{}
 
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		want       []model.Book
-		wantMeta   pagination.Metadata
-		wantErr    bool
-		expectFunc func()
+		name     string
+		fields   fields
+		args     args
+		want     []model.Book
+		wantMeta pagination.Metadata
+		wantErr  bool
+		mockFunc func()
 	}{
 		{
 			name:   "success get books with search param",
@@ -142,7 +142,7 @@ func TestBookLogic_GetBooks(t *testing.T) {
 			want:     expectedResult,
 			wantMeta: pagination.Metadata{},
 			wantErr:  false,
-			expectFunc: func() {
+			mockFunc: func() {
 				ts.MockBookRepo.EXPECT().GetBooks(gomock.Any(), model.BookSearchParams{
 					Search: "oda",
 				}, pagination.Page{}).Return(
@@ -160,7 +160,7 @@ func TestBookLogic_GetBooks(t *testing.T) {
 				repo: tt.fields.repo,
 			}
 
-			tt.expectFunc()
+			tt.mockFunc()
 
 			got, meta, err := logic.GetBooks(tt.args.ctx, tt.args.params, tt.args.page)
 			if (err != nil) != tt.wantErr {
@@ -198,12 +198,12 @@ func TestBookLogic_GetBookByID(t *testing.T) {
 	expectedResult := model.Book{}
 
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		want       model.Book
-		wantErr    bool
-		expectFunc func()
+		name     string
+		fields   fields
+		args     args
+		want     model.Book
+		wantErr  bool
+		mockFunc func()
 	}{
 		{
 			name:   "success get book data by id",
@@ -214,7 +214,7 @@ func TestBookLogic_GetBookByID(t *testing.T) {
 			},
 			want:    expectedResult,
 			wantErr: false,
-			expectFunc: func() {
+			mockFunc: func() {
 				ts.MockBookRepo.EXPECT().GetBookByID(gomock.Any(), int64(1)).Return(expectedResult, nil)
 			},
 		},
@@ -226,7 +226,7 @@ func TestBookLogic_GetBookByID(t *testing.T) {
 				repo: tt.fields.repo,
 			}
 
-			tt.expectFunc()
+			tt.mockFunc()
 
 			got, err := logic.GetBookByID(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -261,12 +261,12 @@ func TestBookLogic_UpdateBook(t *testing.T) {
 	expectedResult := model.Book{}
 
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		want       model.Book
-		wantErr    bool
-		expectFunc func()
+		name     string
+		fields   fields
+		args     args
+		want     model.Book
+		wantErr  bool
+		mockFunc func()
 	}{
 		{
 			name:   "success update book data",
@@ -282,7 +282,7 @@ func TestBookLogic_UpdateBook(t *testing.T) {
 			},
 			want:    expectedResult,
 			wantErr: false,
-			expectFunc: func() {
+			mockFunc: func() {
 				ts.MockBookRepo.EXPECT().UpdateBook(gomock.Any(), model.Book{
 					ID:          int64(1),
 					Title:       "One Piece",
@@ -302,7 +302,7 @@ func TestBookLogic_UpdateBook(t *testing.T) {
 				repo: tt.fields.repo,
 			}
 
-			tt.expectFunc()
+			tt.mockFunc()
 
 			got, err := logic.UpdateBook(tt.args.ctx, tt.args.data)
 			if (err != nil) != tt.wantErr {
@@ -335,11 +335,11 @@ func TestBookLogic_DeleteBook(t *testing.T) {
 	}
 
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		wantErr    bool
-		expectFunc func()
+		name     string
+		fields   fields
+		args     args
+		wantErr  bool
+		mockFunc func()
 	}{
 		{
 			name:   "success delete book data",
@@ -349,7 +349,7 @@ func TestBookLogic_DeleteBook(t *testing.T) {
 				id:  int64(1),
 			},
 			wantErr: false,
-			expectFunc: func() {
+			mockFunc: func() {
 				ts.MockBookRepo.EXPECT().DeleteBook(gomock.Any(), int64(1)).Return(nil)
 			},
 		},
@@ -361,7 +361,7 @@ func TestBookLogic_DeleteBook(t *testing.T) {
 				repo: tt.fields.repo,
 			}
 
-			tt.expectFunc()
+			tt.mockFunc()
 
 			if err := logic.DeleteBook(tt.args.ctx, tt.args.id); (err != nil) != tt.wantErr {
 				t.Errorf("BookLogic.DeleteBook() error = %v, wantErr %v", err, tt.wantErr)
