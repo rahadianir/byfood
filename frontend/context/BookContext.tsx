@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
 
 export interface Book {
   id: number;
@@ -27,7 +27,7 @@ export const BookProvider = ({ children }: { children: ReactNode }) => {
   const [books, setBooks] = useState<Book[]>([]);
   
 
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
         const baseURL = new URL("http://localhost:8080/books")
 
@@ -42,7 +42,7 @@ export const BookProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error fetching books:", error);
         setBooks([]);
     }
-  };
+  }, []);
 
   const addBook = async (book: Omit<Book, "id">) => {
     try {

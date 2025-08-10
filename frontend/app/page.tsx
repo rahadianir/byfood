@@ -8,24 +8,8 @@ import AddBookForm from "@/components/AddBookForm";
 import EditBookForm from "@/components/EditBookForm";
 
 export default function DashboardPage() {
-  const a = [{
-    id: 1,
-    title: "One Piece",
-    author: "Eiichiro Oda",
-    year: 1997,
-  },{
-    id: 2,
-    title: "Naruto",
-    author: "Masashi Kishimoto",
-    year: 1997,
-  },{
-    id: 3,
-    title: "Bleach",
-    author: "Tite Kubo",
-    year: 1997,
-  }]
   const router = useRouter();
-  const { books, fetchBooks, addBook, updateBook, deleteBook } = useBooks();
+  const { books, fetchBooks, deleteBook } = useBooks();
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -35,12 +19,9 @@ export default function DashboardPage() {
   // Selected book for edit/delete
   const [selectedBook, setSelectedBook] = useState<any>(null);
 
-  // Pagination state
-
-
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [fetchBooks]);
 
   const handleDeleteConfirm = async () => {
     if (selectedBook) {
@@ -171,7 +152,7 @@ export default function DashboardPage() {
         onClose={() => setIsDeleteModalOpen(false)}
         title="Delete Book"
       >
-        <p>Are you sure you want to delete "{selectedBook?.title}"?</p>
+        <p>Are you sure you want to delete &quot;{selectedBook?.title}&quot;?</p>
         <div style={{ marginTop: "20px", textAlign: "right" }}>
           <button onClick={() => setIsDeleteModalOpen(false)} style={{ marginRight: "10px" }}>
             Cancel

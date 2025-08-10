@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useBooks } from "../context/BookContext";
 
 interface EditBookFormProps {
-  book: { id: number; title: string; author: string; year: number };
+  book: { id: number; title: string; author: string; publish_year: number };
   onSuccess: () => void;
 }
 
@@ -13,7 +13,7 @@ export default function EditBookForm({ book, onSuccess }: EditBookFormProps) {
   const [formData, setFormData] = useState({
     title: book.title,
     author: book.author,
-    year: book.year,
+    year: book.publish_year,
   });
   const [error, setError] = useState("");
 
@@ -23,6 +23,11 @@ export default function EditBookForm({ book, onSuccess }: EditBookFormProps) {
 
     if (!formData.title.trim() || !formData.author.trim() || !formData.year) {
       setError("All fields are required.");
+      return;
+    }
+
+    if (Number(formData.year) < 0 || Number(formData.year) > new Date().getFullYear()) {
+      setError("Please enter a valid publication year.");
       return;
     }
 
